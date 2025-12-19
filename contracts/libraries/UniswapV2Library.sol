@@ -23,7 +23,9 @@ library UniswapV2Library {
                     abi.encodePacked(
                         hex"ff",
                         factory,
+                        //NOTE: salt = keccak256(abi.encodePacked(token0, token1))
                         keccak256(abi.encodePacked(token0, token1)),
+                        //NOTE: init code hash = keccak256(creation bytecode)
                         hex"96e8ac4277198ff8b6f785478aa9a39f403cb768dd02cbee326c3e7da348845f" // init code hash
                     )
                 )
@@ -50,9 +52,13 @@ library UniswapV2Library {
     }
 
     // given some amount of an asset and pair reserves, returns an equivalent amount of the other asset
+    // NOTE: 保证添加流动性后，price不变
     function quote(uint256 amountA, uint256 reserveA, uint256 reserveB) internal pure returns (uint256 amountB) {
         require(amountA > 0, "UniswapV2Library: INSUFFICIENT_AMOUNT");
         require(reserveA > 0 && reserveB > 0, "UniswapV2Library: INSUFFICIENT_LIQUIDITY");
+        //NOTE:
+        // dy/dx = y0/x0
+        // dy = dx * y0 / x0
         amountB = amountA.mul(reserveB) / reserveA;
     }
 
